@@ -6,7 +6,7 @@ namespace NoSleep
 {
     internal partial class MainWindow : Form
     {
-        private PowerManager powerManager = new PowerManager();
+        private readonly PowerManager powerManager = new PowerManager();
 
         private int jiggleTick = 0;
 
@@ -88,6 +88,14 @@ namespace NoSleep
 					Hide();
 				}
 			}
+        }
+
+        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                WindowState = FormWindowState.Minimized;
+            }
         }
     }
 }
