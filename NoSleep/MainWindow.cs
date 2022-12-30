@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NoSleep.Properties;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -14,7 +15,29 @@ namespace NoSleep
         {
             InitializeComponent();
             trayIcon.Icon = Icon;
-            FormClosed += delegate { powerManager.Dispose(); };
+
+            LoadSettings();
+
+            FormClosed += delegate
+            {
+                SaveSettings();
+                powerManager.Dispose();
+            };
+        }
+
+        private void SaveSettings()
+        {
+            Settings.Default.KeepPowerEnabled = cbActivate.Checked;
+            Settings.Default.KeepDisplayEnabled = cbDisplay.Checked;
+            Settings.Default.JiggleMouseEnabled = cbJiggle.Checked;
+            Settings.Default.Save();
+        }
+
+        private void LoadSettings()
+        {
+            SetKeepPower(Settings.Default.KeepPowerEnabled);
+            SetKeepDisplay(Settings.Default.KeepDisplayEnabled);
+            SetJiggleEnabled(Settings.Default.JiggleMouseEnabled);
         }
 
         private void SetKeepPower(bool keep)
