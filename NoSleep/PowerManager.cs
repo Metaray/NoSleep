@@ -9,11 +9,11 @@ namespace NoSleep
 
         private POWER_REQUEST_CONTEXT powerRequestContext;
 
-		private WinApiHandle powerRequest;
+        private WinApiHandle powerRequest;
 
-		private bool displayRequested = false;
+        private bool displayRequested = false;
 
-		private bool powerRequested = false;
+        private bool powerRequested = false;
 
         public PowerManager()
         {
@@ -26,12 +26,12 @@ namespace NoSleep
             powerRequest = PowerCreateRequest(ref powerRequestContext);
         }
 
-		public void Dispose()
-		{
-			powerRequest.Dispose();
-		}
+        public void Dispose()
+        {
+            powerRequest.Dispose();
+        }
 
-		public void EnableConstantDisplay(bool enable)
+        public void EnableConstantDisplay(bool enable)
         {
             if (enable != displayRequested)
             {
@@ -63,10 +63,10 @@ namespace NoSleep
             }
         }
 
-		#region P/Invoke
+        #region P/Invoke
 
-		// Availability Request Functions
-		[DllImport("kernel32.dll")]
+        // Availability Request Functions
+        [DllImport("kernel32.dll")]
         static extern WinApiHandle PowerCreateRequest(ref POWER_REQUEST_CONTEXT Context);
 
         [DllImport("kernel32.dll")]
@@ -123,6 +123,6 @@ namespace NoSleep
             public PowerRequestContextDetailedInformation DetailedInformation;
         }
 
-		#endregion
-	}
+        #endregion
+    }
 }

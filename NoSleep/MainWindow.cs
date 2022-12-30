@@ -17,36 +17,56 @@ namespace NoSleep
             FormClosed += delegate { powerManager.Dispose(); };
         }
 
+        private void SetKeepPower(bool keep)
+        {
+            keepPowerToolStripMenuItem.Checked = keep;
+            cbActivate.Checked = keep;
+            powerManager.EnableConstantPower(keep);
+        }
+
+        private void SetKeepDisplay(bool keep)
+        {
+            keepDisplayToolStripMenuItem.Checked = keep;
+            cbDisplay.Checked = keep;
+            powerManager.EnableConstantDisplay(keep);
+        }
+
+        private void SetJiggleEnabled(bool enabled)
+        {
+            cbJiggle.Checked = enabled;
+            jiggleMouseToolStripMenuItem.Checked = enabled;
+            jiggleTimer.Enabled = enabled;
+        }
+
         private void cbActivate_CheckedChanged(object sender, EventArgs e)
         {
-            powerManager.EnableConstantPower(cbActivate.Checked);
-            keepPowerToolStripMenuItem.Checked = cbActivate.Checked;
-		}
+            SetKeepPower(cbActivate.Checked);
+        }
 
         private void cbDisplay_CheckedChanged(object sender, EventArgs e)
         {
-            powerManager.EnableConstantDisplay(cbDisplay.Checked);
-			keepDisplayToolStripMenuItem.Checked = cbDisplay.Checked;
-		}
+            SetKeepDisplay(cbDisplay.Checked);
+        }
 
-		private void cbJiggle_CheckedChanged(object sender, EventArgs e)
-		{
-            jiggleTimer.Enabled = cbJiggle.Checked;
-		}
-
-		private void keepPowerToolStripMenuItem_Click(object sender, EventArgs e)
+        private void cbJiggle_CheckedChanged(object sender, EventArgs e)
         {
-            var enable = !keepPowerToolStripMenuItem.Checked;
-            keepPowerToolStripMenuItem.Checked = enable;
-            cbActivate.Checked = enable;
-		}
+            SetJiggleEnabled(cbJiggle.Checked);
+        }
+
+        private void keepPowerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetKeepPower(!keepPowerToolStripMenuItem.Checked);
+        }
 
         private void keepDisplayToolStripMenuItem_Click(object sender, EventArgs e)
         {
-			var enable = !keepDisplayToolStripMenuItem.Checked;
-			keepDisplayToolStripMenuItem.Checked = enable;
-			cbDisplay.Checked = enable;
-		}
+            SetKeepDisplay(!keepDisplayToolStripMenuItem.Checked);
+        }
+
+        private void jiggleMouseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetJiggleEnabled(!jiggleMouseToolStripMenuItem.Checked);
+        }
 
         private void MainWindow_Resize(object sender, EventArgs e)
         {
@@ -59,8 +79,8 @@ namespace NoSleep
         private void jiggleTimer_Tick(object sender, EventArgs e)
         {
             const int Distance = 3;
-			int delta = ((jiggleTick++) & 1) == 0 ? Distance : -Distance;
-			
+            int delta = ((jiggleTick++) & 1) == 0 ? Distance : -Distance;
+            
             //var pos = Cursor.Position;
             //pos.Y += delta;
             //Cursor.Position = pos;
@@ -77,17 +97,17 @@ namespace NoSleep
         {
             if (e.Button == MouseButtons.Left)
             {
-				if (WindowState == FormWindowState.Minimized)
-				{
-					Show();
-					WindowState = FormWindowState.Normal;
-				}
-				else
-				{
-					WindowState = FormWindowState.Minimized;
-					Hide();
-				}
-			}
+                if (WindowState == FormWindowState.Minimized)
+                {
+                    Show();
+                    WindowState = FormWindowState.Normal;
+                }
+                else
+                {
+                    WindowState = FormWindowState.Minimized;
+                    Hide();
+                }
+            }
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
