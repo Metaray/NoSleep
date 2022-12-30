@@ -26,6 +26,7 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cbJiggle = new System.Windows.Forms.CheckBox();
             this.jiggleTimer = new System.Windows.Forms.Timer(this.components);
+            this.jiggleMouseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.trayContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -63,28 +64,29 @@
             this.trayContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.keepPowerToolStripMenuItem,
             this.keepDisplayToolStripMenuItem,
+            this.jiggleMouseToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.trayContextMenu.Name = "trayContextMenu";
-            this.trayContextMenu.Size = new System.Drawing.Size(142, 70);
+            this.trayContextMenu.Size = new System.Drawing.Size(181, 114);
             // 
             // keepPowerToolStripMenuItem
             // 
             this.keepPowerToolStripMenuItem.Name = "keepPowerToolStripMenuItem";
-            this.keepPowerToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.keepPowerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.keepPowerToolStripMenuItem.Text = "Keep Power";
             this.keepPowerToolStripMenuItem.Click += new System.EventHandler(this.keepPowerToolStripMenuItem_Click);
             // 
             // keepDisplayToolStripMenuItem
             // 
             this.keepDisplayToolStripMenuItem.Name = "keepDisplayToolStripMenuItem";
-            this.keepDisplayToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.keepDisplayToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.keepDisplayToolStripMenuItem.Text = "Keep Display";
             this.keepDisplayToolStripMenuItem.Click += new System.EventHandler(this.keepDisplayToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -103,6 +105,13 @@
             // 
             this.jiggleTimer.Interval = 5000;
             this.jiggleTimer.Tick += new System.EventHandler(this.jiggleTimer_Tick);
+            // 
+            // jiggleMouseToolStripMenuItem
+            // 
+            this.jiggleMouseToolStripMenuItem.Name = "jiggleMouseToolStripMenuItem";
+            this.jiggleMouseToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.jiggleMouseToolStripMenuItem.Text = "Jiggle Mouse";
+            this.jiggleMouseToolStripMenuItem.Click += new System.EventHandler(this.jiggleMouseToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -135,5 +144,6 @@
 		private System.Windows.Forms.CheckBox cbJiggle;
 		private System.Windows.Forms.Timer jiggleTimer;
 		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-	}
+        private System.Windows.Forms.ToolStripMenuItem jiggleMouseToolStripMenuItem;
+    }
 }
