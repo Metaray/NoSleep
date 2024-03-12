@@ -1,15 +1,16 @@
 ﻿using NoSleep.Properties;
 using System;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace NoSleep
 {
     internal partial class MainWindow : Form
     {
+        private Settings Settings => Settings.Default;
+
         private readonly PowerManager powerManager = new PowerManager();
 
-        private int jiggleTick = 0;
+        private readonly MouseJiggler mouseJiggler = new MouseJiggler();
 
         public MainWindow()
         {
@@ -27,17 +28,17 @@ namespace NoSleep
 
         private void SaveSettings()
         {
-            Settings.Default.KeepPowerEnabled = cbActivate.Checked;
-            Settings.Default.KeepDisplayEnabled = cbDisplay.Checked;
-            Settings.Default.JiggleMouseEnabled = cbJiggle.Checked;
-            Settings.Default.Save();
+            Settings.KeepPowerEnabled = cbActivate.Checked;
+            Settings.KeepDisplayEnabled = cbDisplay.Checked;
+            Settings.JiggleMouseEnabled = cbJiggle.Checked;
+            Settings.Save();
         }
 
         private void LoadSettings()
         {
-            SetKeepPower(Settings.Default.KeepPowerEnabled);
-            SetKeepDisplay(Settings.Default.KeepDisplayEnabled);
-            SetJiggleEnabled(Settings.Default.JiggleMouseEnabled);
+            SetKeepPower(Settings.KeepPowerEnabled);
+            SetKeepDisplay(Settings.KeepDisplayEnabled);
+            SetJiggleEnabled(Settings.JiggleMouseEnabled);
         }
 
         private void SetKeepPower(bool keep)
@@ -101,14 +102,7 @@ namespace NoSleep
 
         private void jiggleTimer_Tick(object sender, EventArgs e)
         {
-            const int Distance = 3;
-            int delta = ((jiggleTick++) & 1) == 0 ? Distance : -Distance;
-            
-            //var pos = Cursor.Position;
-            //pos.Y += delta;
-            //Cursor.Position = pos;
-
-            MouseJiggler.MoveDelta(delta, delta);
+            mouseJiggler.Jiggle();
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
