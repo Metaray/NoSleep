@@ -7,9 +7,9 @@ namespace NoSleep
     {
         // https://stackoverflow.com/questions/629240/prevent-windows-from-going-into-sleep-when-my-program-is-running
 
-        private POWER_REQUEST_CONTEXT powerRequestContext;
+        private readonly REASON_CONTEXT powerRequestContext;
 
-        private WinApiHandle powerRequest;
+        private readonly WinApiHandle powerRequest;
 
         private bool displayRequested = false;
 
@@ -24,6 +24,11 @@ namespace NoSleep
 
             // Create the request, get a handle
             powerRequest = PowerCreateRequest(ref powerRequestContext);
+
+            if (powerRequest.IsInvalid)
+            {
+                throw new Exception($"Failed to create power request (code {Marshal.GetLastWin32Error()})");
+            }
         }
 
         public void Dispose()
@@ -37,11 +42,11 @@ namespace NoSleep
             {
                 if (enable)
                 {
-                    PowerSetRequest(powerRequest, PowerRequestType.PowerRequestDisplayRequired);
+                    AssertPowerCall(PowerSetRequest(powerRequest, PowerRequestType.PowerRequestDisplayRequired));
                 }
                 else
                 {
-                    PowerClearRequest(powerRequest, PowerRequestType.PowerRequestDisplayRequired);
+                    AssertPowerCall(PowerClearRequest(powerRequest, PowerRequestType.PowerRequestDisplayRequired));
                 }
                 displayRequested = enable;
             }
@@ -53,30 +58,38 @@ namespace NoSleep
             {
                 if (enable)
                 {
-                    PowerSetRequest(powerRequest, PowerRequestType.PowerRequestSystemRequired);
+                    AssertPowerCall(PowerSetRequest(powerRequest, PowerRequestType.PowerRequestSystemRequired));
                 }
                 else
                 {
-                    PowerClearRequest(powerRequest, PowerRequestType.PowerRequestSystemRequired);
+                    AssertPowerCall(PowerClearRequest(powerRequest, PowerRequestType.PowerRequestSystemRequired));
                 }
                 powerRequested = enable;
             }
         }
 
+        private static void AssertPowerCall(bool result)
+        {
+            if (!result)
+            {
+                throw new Exception($"Power call failed (code {Marshal.GetLastWin32Error()})");
+            }
+        }
+
         #region P/Invoke
 
-        // Availability Request Functions
-        [DllImport("kernel32.dll")]
-        static extern WinApiHandle PowerCreateRequest(ref POWER_REQUEST_CONTEXT Context);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern WinApiHandle PowerCreateRequest(ref REASON_CONTEXT Context);
 
-        [DllImport("kernel32.dll")]
-        static extern bool PowerSetRequest(WinApiHandle PowerRequestHandle, PowerRequestType RequestType);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool PowerSetRequest(WinApiHandle PowerRequestHandle, PowerRequestType RequestType);
 
-        [DllImport("kernel32.dll")]
-        static extern bool PowerClearRequest(WinApiHandle PowerRequestHandle, PowerRequestType RequestType);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool PowerClearRequest(WinApiHandle PowerRequestHandle, PowerRequestType RequestType);
 
-        // Availablity Request Enumerations and Constants
-        enum PowerRequestType
+        private enum PowerRequestType
         {
             PowerRequestDisplayRequired = 0,
             PowerRequestSystemRequired,
@@ -84,43 +97,18 @@ namespace NoSleep
             PowerRequestMaximum
         }
 
-        const int POWER_REQUEST_CONTEXT_VERSION = 0;
-        const int POWER_REQUEST_CONTEXT_SIMPLE_STRING = 0x1;
-        const int POWER_REQUEST_CONTEXT_DETAILED_STRING = 0x2;
+        private const int POWER_REQUEST_CONTEXT_VERSION = 0;
+        private const int POWER_REQUEST_CONTEXT_SIMPLE_STRING = 0x1;
 
-        // Availablity Request Structures
-        // Note:  Windows defines the POWER_REQUEST_CONTEXT structure with an
-        // internal union of SimpleReasonString and Detailed information.
-        // To avoid runtime interop issues, this version of 
-        // POWER_REQUEST_CONTEXT only supports SimpleReasonString.  
-        // To use the detailed information,
-        // define the PowerCreateRequest function with the first 
-        // parameter of type POWER_REQUEST_CONTEXT_DETAILED.
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        struct POWER_REQUEST_CONTEXT
+        private struct REASON_CONTEXT
         {
             public UInt32 Version;
             public UInt32 Flags;
+            
+            // Only simple reason supported
             [MarshalAs(UnmanagedType.LPWStr)]
             public string SimpleReasonString;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        struct PowerRequestContextDetailedInformation
-        {
-            public WinApiHandle LocalizedReasonModule;
-            public UInt32 LocalizedReasonId;
-            public UInt32 ReasonStringCount;
-            [MarshalAs(UnmanagedType.LPWStr)]
-            public string[] ReasonStrings;
-        }
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        struct POWER_REQUEST_CONTEXT_DETAILED
-        {
-            public UInt32 Version;
-            public UInt32 Flags;
-            public PowerRequestContextDetailedInformation DetailedInformation;
         }
 
         #endregion

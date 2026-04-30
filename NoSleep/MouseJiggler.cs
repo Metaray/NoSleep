@@ -80,26 +80,26 @@ namespace NoSleep
             
             if (sent != inputs.Length)
             {
-                Trace.WriteLine("SendInput failed");
+                Trace.WriteLine($"SendInput failed (code {Marshal.GetLastWin32Error()})");
             }
         }
 
         #region P/Invoke
 
-        [DllImport("user32.dll")]
-        static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
 
         [DllImport("user32.dll")]
-        static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
+        private static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
 
         [StructLayout(LayoutKind.Sequential)]
-        struct INPUT
+        private struct INPUT
         {
             internal InputType type;
             internal InputUnion U;
         }
 
-        enum InputType : uint
+        private enum InputType : uint
         {
             INPUT_MOUSE,
             INPUT_KEYBOARD,
@@ -107,7 +107,7 @@ namespace NoSleep
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        struct InputUnion
+        private struct InputUnion
         {
             [FieldOffset(0)]
             internal MOUSEINPUT mi;
@@ -118,7 +118,7 @@ namespace NoSleep
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        struct MOUSEINPUT
+        private struct MOUSEINPUT
         {
             internal int dx;
             internal int dy;
@@ -129,7 +129,7 @@ namespace NoSleep
         }
 
         [Flags]
-        enum MOUSEEVENTF : uint
+        private enum MOUSEEVENTF : uint
         {
             ABSOLUTE = 0x8000,
             HWHEEL = 0x01000,
@@ -148,7 +148,7 @@ namespace NoSleep
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        struct LASTINPUTINFO
+        private struct LASTINPUTINFO
         {
             internal int cbSize;
             internal int dwTime;
